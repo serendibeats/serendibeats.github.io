@@ -3,39 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>serendibeats — creative studio</title>
-<style>
-  :root { color-scheme: light dark; }
-  body { max-width: 640px; margin: 8vh auto; padding: 0 24px; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; line-height: 1.7; color: #222; background: #fff; }
-  @media (prefers-color-scheme: dark) { body { color: #ddd; background: #111; } a { color: #8ab4f8; } }
-  h1 { font-size: 1.6rem; letter-spacing: -0.02em; }
-  h2 { font-size: 1.05rem; margin-top: 2.2em; }
-  footer { margin-top: 4em; font-size: 0.85rem; opacity: 0.6; }
-</style>
+<title>Serendibeats</title>
+<meta name="description" content="Developer in Seoul building SceneBoard, running a Telegram curation channel, learning to mix. Projects, channels, experiments.">
+<link rel="canonical" href="https://serendibeats.github.io/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#0f0d0b">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Serendibeats">
+<meta property="og:description" content="Developer in Seoul — projects, channels, experiments.">
+<meta property="og:url" content="https://serendibeats.github.io/">
+<meta property="og:image" content="https://serendibeats.github.io/assets/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<h1>serendibeats</h1>
-<p>A two-person independent creative studio based in Seoul, producing
-short-form video content: character-driven visual storytelling and
-narrative Bible-story videos, with original music composed in-house.</p>
 
-<h2>What we do</h2>
-<ul>
-  <li>Short-form video production (Shorts / Reels)</li>
-  <li>Visual concept design and reference research</li>
-  <li>Original music &amp; vocal production</li>
-  <li>Internal production tooling that supports the workflow above</li>
-</ul>
+<button class="langsw" id="langsw" aria-label="Switch language"><b>EN</b> | KO</button>
 
-<h2>Tools</h2>
-<p><strong>serendibeats reference sync</strong> — an internal, read-only tool
-that helps our team organize visual references collected by the account
-owner. Used only by us; not offered to third parties.
-See the <a href="/privacy/">privacy policy</a>.</p>
+<header class="hero">
+  <img class="art" src="assets/img/hero.webp" alt="" fetchpriority="high" onerror="this.style.display='none'">
+  <div class="inner">
+    <h1>Serendibeats</h1>
+    <p class="sub" data-ko="서울의 개발자 <span class='dot'>·</span> 믹싱 배우는 중">developer in Seoul <span class="dot">·</span> learning to mix</p>
+    <nav class="links">
+      <a href="https://t.me/by_serendibeats" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://www.threads.com/@serendibeats" target="_blank" rel="noopener">Threads</a>
+      <a href="https://www.linkedin.com/in/yongsun-hong-b166b31b/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+  </div>
+</header>
 
-<h2>Contact</h2>
-<p><a href="mailto:serendibeats@gmail.com">serendibeats@gmail.com</a></p>
+<section class="about">
+  <h2>About</h2>
+  <p data-ko="앱을 만듭니다. 지금은 구조화된 AI 영상 제작 macOS 툴 <em>SceneBoard</em>를 만들고 있습니다.">I build apps. Right now that means <em>SceneBoard</em>, a macOS tool for structured AI video production.</p>
+  <p data-ko="키보드 밖에서는 디제잉을 배우는 중입니다. 들려줄 만한 라이브셋이 생기면 여기에 올라올 예정입니다.">Away from the keyboard I'm learning to DJ. Live sets will show up here once they're worth hearing.</p>
+</section>
 
-<footer>© 2026 serendibeats</footer>
+<section class="work">
+  <h2>Work</h2>
+  <div class="filters" id="filters" hidden></div>
+  <div class="grid" id="grid">
+    <noscript><p style="font-family:monospace;font-size:0.8rem;">Enable JavaScript to see the project list. (프로젝트 목록은 JavaScript가 필요합니다)</p></noscript>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 serendibeats</span>
+  <span><a href="mailto:serendibeats@gmail.com">email</a></span>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>
