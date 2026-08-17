@@ -22,6 +22,18 @@
   var primed = false;
   var lastW = window.innerWidth;
 
+  /* 챕터: 필름 비트에 맞춘 시작 지점 (타이틀 → 턴테이블 → 키보드 → 창가) */
+  var chapters = stage.querySelectorAll('.chapter');
+  var bounds = [0, 0.22, 0.5, 0.78];
+  var activeCh = 0;
+
+  function setChapter(i) {
+    if (i === activeCh || !chapters[i]) return;
+    if (chapters[activeCh]) chapters[activeCh].classList.remove('on');
+    chapters[i].classList.add('on');
+    activeCh = i;
+  }
+
   function layout() {
     var pageY = window.scrollY || window.pageYOffset;
     rootTop = hero.getBoundingClientRect().top + pageY;
@@ -71,6 +83,7 @@
     document.documentElement.classList.remove('scrub-on');
     hero.style.removeProperty('--scrub-progress');
     ready = false;
+    setChapter(0);
     layout();
   }
 
@@ -83,6 +96,13 @@
       if (Math.abs(video.currentTime - t) > eps) {
         try { video.currentTime = t; } catch (e) { /* 다음 프레임에 재시도 */ }
       }
+    }
+    if (chapters.length > 1 && document.documentElement.classList.contains('scrub-on')) {
+      var ch = 0;
+      for (var k = 1; k < bounds.length && k < chapters.length; k++) {
+        if (target >= bounds[k]) ch = k;
+      }
+      setChapter(ch);
     }
     hero.style.setProperty('--scrub-progress', target.toFixed(4));
     window.requestAnimationFrame(tick);
