@@ -8,7 +8,6 @@
   var chip = document.getElementById('chip');
   var tgl = document.getElementById('radio-tgl');
   var np = document.getElementById('radio-np');
-  var tc = document.getElementById('radio-tc');
   var out = document.getElementById('radio-out');
   var ann = document.getElementById('radio-ann');
   if (!corner || !chip || !tgl) return;
@@ -107,11 +106,6 @@
     }, 50);
   }
 
-  function fmt(t) {
-    var s = Math.floor(t || 0);
-    return '0' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
-  }
-
   function refreshTrunc() {
     var truncated = np.scrollWidth > np.clientWidth + 1;
     np.classList.toggle('trunc', truncated);
@@ -152,7 +146,6 @@
     var g = ++gen;
     fadingOut = false;
     caption(d);
-    tc.textContent = '00:00';
     if ('mediaSession' in navigator) {
       try { navigator.mediaSession.metadata = new MediaMetadata({ title: d.t, artist: d.a }); } catch (e) { /* 무시 */ }
     }
@@ -197,6 +190,7 @@
 
   function start(auto) {
     disarmGesture();
+    killHint();
     if (!auto) store.set('radio', 'on');
     if (!audio) {
       audio = new Audio();
@@ -206,7 +200,6 @@
       audio.addEventListener('ended', function () { if (on) next(); });
       audio.addEventListener('timeupdate', function () {
         if (!on || !audio.duration) return;
-        tc.textContent = fmt(audio.currentTime);
         if (canFade && !fadingOut && audio.duration - audio.currentTime < 2) {
           fadingOut = true;
           fadeTo(0, 1800);
@@ -288,10 +281,27 @@
   function disarmGesture() {
     document.removeEventListener('pointerdown', onGesture, true);
   }
+  /* 1회성 사운드 힌트 — 소리가 전혀 안 나는(armed) 상태에서만, 방문자당 1회 */
+  var hint = document.getElementById('radio-hint');
+  var hintShown = false;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 무시 */ } }
+  function killHint() { if (hint) hint.hidden = true; }
+  function showHint() {
+    if (!hint || hintShown || lsGet('radioHinted')) return;
+    hintShown = true;
+    setTimeout(function () {
+      if (on) return;                      /* 그 사이 (음소거) 방송이 시작됐으면 불필요 */
+      hint.hidden = false;
+      lsSet('radioHinted', '1');
+      document.addEventListener('pointerdown', killHint, { once: true, capture: true, passive: true });
+    }, 1500);
+  }
   function armGesture() {
     if (store.get('radio') === 'off') return;
     /* 첫 포인터 제스처에서 시작 (키보드는 의도적 토글만 — SR 사용자 배려) */
     document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
+    showHint();
   }
   function autoArm() {
     if (store.get('radio') === 'off') return;

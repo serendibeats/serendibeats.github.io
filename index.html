@@ -16,12 +16,13 @@
 <meta property="og:url" content="https://serendibeats.github.io/">
 <meta property="og:image" content="https://serendibeats.github.io/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
 
 <!-- 우상단 유틸리티 코너: 크레이트 라디오(JS가 켬) + 언어 스위치 -->
 <div class="corner" id="corner">
+  <span class="hint" id="radio-hint" aria-hidden="true" hidden>sound on — <span class="tap">tap</span><span class="clk">click</span> anywhere</span>
   <div class="chip" id="chip" hidden>
     <div class="core">
       <button class="tgl" id="radio-tgl" aria-pressed="false" aria-label="on air — crate radio, random tracks from the crate">
@@ -29,8 +30,7 @@
         <span class="lab">on air</span>
       </button>
       <span class="live-info">
-        <span class="mu" aria-hidden="true">muted — tap for sound</span>
-        <span class="tc" id="radio-tc">00:00</span>
+        <span class="mu" aria-hidden="true">muted — <span class="tap">tap</span><span class="clk">click</span> for sound</span>
         <span class="np" id="radio-np"></span>
         <span class="ctl">
           <button id="radio-skip" aria-label="Next track">→</button>
@@ -66,7 +66,7 @@
       </div>
       <div class="chapter" data-at="0.22">
         <p class="kicker">Music</p>
-        <p class="line" data-ko="크레이트엔 <em>432곡</em> — 128 BPM, 마이너 키, Black Book 위주. 라디오는 우상단 <em>on air</em>.">The crate runs <em>432 tracks</em> deep — 128 BPM, minor keys, Black Book heavy. <em>on air</em> is top right.</p>
+        <p class="line" data-ko="디제잉 배우는 중 — 지금은 디깅부터. 크레이트는 우상단 <em>on air</em>에서 흐릅니다.">Learning to DJ — for now, digging. The crate plays top right, <em>on air</em>.</p>
       </div>
       <div class="chapter" data-at="0.5">
         <p class="kicker">Code</p>
@@ -108,6 +108,6 @@
 
 <script src="js/main.js"></script>
 <script src="js/scrub.js"></script>
-<script src="js/radio.js?v=7"></script>
+<script src="js/radio.js?v=8"></script>
 </body>
 </html>
