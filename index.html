@@ -31,7 +31,7 @@
       <button type="button">Say hi</button>
     </nav>
     <div class="inner">
-      <div class="chapter on">
+      <div class="chapter on" data-at="0">
         <h1>Serendibeats</h1>
         <p class="sub" data-ko="서울의 개발자 <span class='dot'>·</span> AI로 이것저것 자동화 <span class='dot'>·</span> 믹싱 배우는 중">developer in Seoul <span class="dot">·</span> automating with AI <span class="dot">·</span> learning to mix</p>
         <nav class="links">
@@ -40,21 +40,17 @@
           <a href="https://www.linkedin.com/in/yongsun-hong-b166b31b/" target="_blank" rel="noopener">LinkedIn</a>
         </nav>
       </div>
-      <div class="chapter">
+      <div class="chapter" data-at="0.22">
         <p class="kicker">Music</p>
         <p class="line" data-ko="믹싱을 배우는 중. 들려줄 만한 라이브셋이 생기면 여기 올라옵니다.">Learning to mix. Live sets will land here once they're worth hearing.</p>
       </div>
-      <div class="chapter">
+      <div class="chapter" data-at="0.5">
         <p class="kicker">Code</p>
         <p class="line" data-ko="AI와 함께 만듭니다 — 지금은 구조화 영상 제작 macOS 앱 <em>SceneBoard</em>.">Building with AI in the loop — right now, <em>SceneBoard</em>, structured video production for macOS.</p>
       </div>
-      <div class="chapter">
+      <div class="chapter" data-at="0.78">
         <p class="kicker">Say hi</p>
-        <nav class="links">
-          <a href="https://t.me/by_serendibeats" target="_blank" rel="noopener">Telegram</a>
-          <a href="https://www.threads.com/@serendibeats" target="_blank" rel="noopener">Threads</a>
-          <a href="https://www.linkedin.com/in/yongsun-hong-b166b31b/" target="_blank" rel="noopener">LinkedIn</a>
-        </nav>
+        <!-- 링크는 첫 챕터의 nav를 JS가 복제해 채움 — 원본 한 벌 유지 -->
       </div>
     </div>
     <p class="scroll-hint" aria-hidden="true">scroll</p>
@@ -77,7 +73,12 @@
 
 <footer>
   <span>© 2026 serendibeats</span>
-  <span><a href="mailto:serendibeats@gmail.com">email</a></span>
+  <span>
+    <a href="https://t.me/by_serendibeats" target="_blank" rel="noopener">telegram</a> ·
+    <a href="https://www.threads.com/@serendibeats" target="_blank" rel="noopener">threads</a> ·
+    <a href="https://www.linkedin.com/in/yongsun-hong-b166b31b/" target="_blank" rel="noopener">linkedin</a> ·
+    <a href="mailto:serendibeats@gmail.com">email</a>
+  </span>
 </footer>
 
 <script src="js/main.js"></script>

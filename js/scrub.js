@@ -22,11 +22,24 @@
   var primed = false;
   var lastW = window.innerWidth;
 
-  /* 챕터: 필름 비트에 맞춘 시작 지점 (타이틀 → 턴테이블 → 키보드 → 창가) */
+  /* 챕터: 시작 지점은 각 .chapter의 data-at(필름 비트)에서 읽는다 —
+     타이밍이 마크업과 함께 살아서 챕터 추가·필름 재편집 시 어긋나지 않음 */
   var chapters = stage.querySelectorAll('.chapter');
-  var bounds = [0, 0.22, 0.5, 0.78];
+  var bounds = [];
+  chapters.forEach(function (ch, i) {
+    var at = parseFloat(ch.dataset.at);
+    bounds.push(isNaN(at) ? (i / Math.max(chapters.length, 1)) : at);
+  });
   var activeCh = 0;
   var routeBtns = stage.querySelectorAll('.route button');
+  var stopped = false;
+
+  /* 마지막 챕터(Say hi)의 링크는 첫 챕터 nav를 복제 — 원본 한 벌만 관리 */
+  var lastCh = chapters[chapters.length - 1];
+  var firstNav = stage.querySelector('.chapter .links');
+  if (lastCh && firstNav && !lastCh.querySelector('.links')) {
+    lastCh.appendChild(firstNav.cloneNode(true));
+  }
 
   function setChapter(i) {
     if (i === activeCh || !chapters[i]) return;
@@ -92,6 +105,7 @@
   /* 필름을 못 받으면 스크럽을 접고 일반(정적) 히어로로 복귀 —
      포스터 위를 380vh 스크롤하게 두지 않는다 */
   function bail() {
+    stopped = true;
     document.documentElement.classList.remove('scrub-on');
     hero.style.removeProperty('--scrub-progress');
     ready = false;
@@ -100,6 +114,7 @@
   }
 
   function tick() {
+    if (stopped) return; /* bail 이후 루프 종료 — 스타일 재설정 없음 */
     var y = (window.scrollY || window.pageYOffset) - rootTop;
     target = Math.min(1, Math.max(0, y / total));
     /* 히어로를 한 화면 이상 지나면 시킹·챕터 연산을 쉰다 */
@@ -114,10 +129,12 @@
         try { video.currentTime = t; } catch (e) { /* 다음 프레임에 재시도 */ }
       }
     }
-    if (chapters.length > 1 && document.documentElement.classList.contains('scrub-on')) {
+    /* 챕터는 필름이 실제 따라가는 완화값(current)에 동기화 —
+       빠른 점프에서 카피가 필름을 앞서가지 않고, 필름 로드 전에는 전환하지 않는다 */
+    if (chapters.length > 1 && video && ready) {
       var ch = 0;
       for (var k = 1; k < bounds.length && k < chapters.length; k++) {
-        if (target >= bounds[k]) ch = k;
+        if (current >= bounds[k]) ch = k;
       }
       setChapter(ch);
     }
