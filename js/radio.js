@@ -29,6 +29,12 @@
   var MAXFAILS = 8;
   var canFade = true;      /* iOS는 volume 제어 불가 — 감지해서 페이드 생략 */
 
+  /* 명시적으로 끈 방문자는 기억하고 다음 방문에 자동 시작하지 않는다 */
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 무시 */ } }
+  };
+
   /* 44.1kHz 모노 16bit 1샘플 무음 WAV — 첫 제스처에서 재생해 엘리먼트를 언락 */
   function silentWav() {
     var s = 'RIFF&\0\0\0WAVEfmt \x10\0\0\0\x01\0\x01\0D\xac\0\0\x88X\x01\0\x02\0\x10\0data\x02\0\0\0\0\0';
@@ -106,7 +112,10 @@
   function refreshTrunc() {
     var truncated = np.scrollWidth > np.clientWidth + 1;
     np.classList.toggle('trunc', truncated);
-    np.style.setProperty('--shift', (np.clientWidth - np.scrollWidth) + 'px');
+    var shift = np.clientWidth - np.scrollWidth;
+    np.style.setProperty('--shift', shift + 'px');
+    /* 이동 거리 비례 속도(~22px/s 왕복 왕환), 최소 6초 — 길수록 천천히 */
+    np.style.setProperty('--mdur', Math.max(6, Math.round(Math.abs(shift) / 22 * 3)) + 's');
   }
 
   function caption(d) {
@@ -176,7 +185,9 @@
     play(qi);
   }
 
-  function start() {
+  function start(auto) {
+    disarmGesture();
+    if (!auto) store.set('radio', 'on');
     if (!audio) {
       audio = new Audio();
       audio.src = silentWav();          /* 제스처 안의 무음 재생 = 언락 */
@@ -207,15 +218,16 @@
       queue = shuffle();
       qi = -1;
       next();
-      ann.textContent = 'on air — ' + np.textContent;
+      if (!auto) ann.textContent = 'on air — ' + np.textContent; /* 자동 시작은 SR에 침묵 */
     }).catch(function () {
       if (!on) return;
-      stopRadio();
+      stopRadio(false);
       ann.textContent = 'crate radio unavailable';
     });
   }
 
-  function stopRadio() {
+  function stopRadio(userInitiated) {
+    if (userInitiated) store.set('radio', 'off');
     on = false;
     gen++;                              /* 진행 중이던 모든 비동기 무효화 */
     clearInterval(fadeTimer);
@@ -232,12 +244,42 @@
     tgl.setAttribute('aria-pressed', 'false');
   }
 
-  tgl.addEventListener('click', function () { on ? stopRadio() : start(); });
+  tgl.addEventListener('click', function () { on ? stopRadio(true) : start(false); });
   document.getElementById('radio-skip').addEventListener('click', function () {
     if (!on) return;
     next();
     ann.textContent = np.textContent;   /* 사용자 조작만 announce — 자동 전환은 침묵 */
   });
-  document.getElementById('radio-stop').addEventListener('click', stopRadio);
+  document.getElementById('radio-stop').addEventListener('click', function () { stopRadio(true); });
   window.addEventListener('resize', refreshTrunc);
+
+  /* ── 기본 on air: 로드 시 자동재생을 시도하고, 차단되면 첫 제스처에서 시작 ──
+     끈 적 있는 방문자(localStorage)와 reduced-motion 환경은 건드리지 않는다. */
+  function onGesture(e) {
+    /* 코너 자체(토글이 처리)와 링크(페이지 이탈 중 소리 방지)는 제외 */
+    var t = e.target;
+    if (t && t.closest && (t.closest('.corner') || t.closest('a[href]'))) return;
+    disarmGesture();
+    if (!on && store.get('radio') !== 'off') start(true);
+  }
+  function disarmGesture() {
+    document.removeEventListener('pointerdown', onGesture, true);
+  }
+  function autoArm() {
+    if (store.get('radio') === 'off') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var probe = new Audio(silentWav());
+    var p = probe.play();
+    if (p && p.then) {
+      p.then(function () {
+        probe.pause();
+        if (!on) start(true);            /* 자동재생 허용 브라우저 — 바로 시작 */
+      }).catch(function () {
+        /* 차단됨 — 첫 포인터 제스처에서 시작 (키보드는 의도적 토글만) */
+        document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
+      });
+    }
+  }
+  if (document.readyState === 'complete') autoArm();
+  else window.addEventListener('load', autoArm); /* LCP·필름 로드와 경쟁하지 않게 */
 })();
