@@ -221,7 +221,7 @@
     ready().then(function () {
       if (!on) return;
       if (!pool.length) throw new Error('empty pool');
-      queue = shuffle();
+      if (!queue.length) queue = shuffle(); /* 예열된 큐가 있으면 그대로 (첫 곡 lookup 캐시 적중) */
       qi = -1;
       next();
       if (!auto) ann.textContent = 'on air — ' + np.textContent; /* 자동 시작은 SR에 침묵 */
@@ -295,6 +295,13 @@
       });
     }
   }
-  if (document.readyState === 'complete') autoArm();
-  else window.addEventListener('load', autoArm); /* LCP·필름 로드와 경쟁하지 않게 */
+  /* 시작 지연 최소화: 풀 프리페치 + 큐 예열 + 첫 곡 lookup 선행 (전부 소량 요청 —
+     6.8MB 필름은 load 이후에나 시작되므로 경쟁 없음). 소리는 여전히 정책/제스처가 관문. */
+  ready().then(function () {
+    if (!queue.length && pool.length) {
+      queue = shuffle();
+      resolve(queue[0]).catch(function () { /* 예열 실패는 재생 시점에 재시도 */ });
+    }
+  }).catch(function () { /* 첫 클릭에서 재시도 */ });
+  autoArm();
 })();
