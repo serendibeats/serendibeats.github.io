@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Serendibeats</title>
-<meta name="description" content="Developer in Seoul building apps and automating with AI — SceneBoard, a Telegram curation channel, AI video experiments. Learning to mix.">
+<meta name="description" content="Developer in Seoul building apps and automating with AI — SceneBoard, a Telegram curation channel, AI video experiments. The crate radio is on air.">
 <link rel="canonical" href="https://serendibeats.github.io/">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
@@ -20,10 +20,33 @@
 </head>
 <body>
 
+<!-- 우상단 유틸리티 코너: 크레이트 라디오(JS가 켬) + 언어 스위치 -->
+<div class="corner" id="corner">
+  <div class="chip" id="chip" hidden>
+    <div class="core">
+      <button class="tgl" id="radio-tgl" aria-pressed="false" aria-label="on air — crate radio, random tracks from the crate">
+        <span class="glyph" aria-hidden="true"></span>
+        <span class="lab">on air</span>
+      </button>
+      <span class="live-info">
+        <span class="tc" id="radio-tc">00:00</span>
+        <span class="np" id="radio-np"></span>
+        <span class="ctl">
+          <button id="radio-skip" aria-label="Next track">→</button>
+          <a id="radio-out" href="https://music.apple.com" target="_blank" rel="noopener" aria-label="Open current track in Apple Music">↗</a>
+          <button id="radio-stop" aria-label="Stop radio">×</button>
+        </span>
+      </span>
+    </div>
+  </div>
+  <span class="div" aria-hidden="true" hidden></span>
+  <button class="langsw" id="langsw" aria-label="Switch language"><span class="cur">en</span><span class="alt">ko</span></button>
+</div>
+<span class="sr" aria-live="polite" id="radio-ann"></span>
+
 <header class="hero">
   <div class="hero-stage">
     <img class="art" src="assets/img/hero.webp" alt="" fetchpriority="high" onerror="this.style.display='none'">
-    <button class="langsw" id="langsw" aria-label="Switch language"><b>EN</b> | KO</button>
     <nav class="route" id="route" aria-label="Chapters">
       <button type="button">Intro</button>
       <button type="button">Music</button>
@@ -42,7 +65,7 @@
       </div>
       <div class="chapter" data-at="0.22">
         <p class="kicker">Music</p>
-        <p class="line" data-ko="믹싱을 배우는 중. 들려줄 만한 라이브셋이 생기면 여기 올라옵니다.">Learning to mix. Live sets will land here once they're worth hearing.</p>
+        <p class="line" data-ko="크레이트엔 <em>432곡</em> — 128 BPM, 마이너 키, Black Book 위주. 라디오는 우상단 <em>on air</em>.">The crate runs <em>432 tracks</em> deep — 128 BPM, minor keys, Black Book heavy. <em>on air</em> is top right.</p>
       </div>
       <div class="chapter" data-at="0.5">
         <p class="kicker">Code</p>
@@ -60,7 +83,7 @@
 <section class="about">
   <h2>About</h2>
   <p data-ko="앱을 만들고, 맡길 수 있는 일은 AI 에이전트에게 맡겨봅니다 — 이 페이지와 위의 필름도 그렇게 만들었습니다. 지금은 구조화 AI 영상 제작 macOS 툴 <em>SceneBoard</em>를 만들고 있습니다.">I build apps, and I hand whatever I can to AI agents — this page and the film above were shipped that way. Right now I'm building <em>SceneBoard</em>, a macOS tool for structured AI video production.</p>
-  <p data-ko="키보드 밖에서는 디제잉을 배우는 중입니다. 들려줄 만한 라이브셋이 생기면 여기에 올라올 예정입니다.">Away from the keyboard I'm learning to DJ. Live sets will show up here once they're worth hearing.</p>
+  <p data-ko="키보드 밖에서는 디제잉을 배우는 중입니다 — 우선은 디깅부터. 크레이트에 432곡이 쌓였고, 우상단 <em>on air</em>를 누르면 흘러나옵니다. 라이브셋은 그다음입니다.">Away from the keyboard I'm learning to DJ — digging first. The crate is 432 tracks deep and plays from the <em>on air</em> switch, top right. Live sets come next.</p>
 </section>
 
 <section class="work">
@@ -79,9 +102,11 @@
     <a href="https://www.linkedin.com/in/yongsun-hong-b166b31b/" target="_blank" rel="noopener">linkedin</a> ·
     <a href="mailto:serendibeats@gmail.com">email</a>
   </span>
+  <span><a href="https://music.apple.com" target="_blank" rel="noopener">radio previews courtesy of Apple Music</a></span>
 </footer>
 
 <script src="js/main.js"></script>
 <script src="js/scrub.js"></script>
+<script src="js/radio.js"></script>
 </body>
 </html>

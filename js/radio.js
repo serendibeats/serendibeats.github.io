@@ -1,0 +1,243 @@
+/* 크레이트 라디오: 우상단 on air를 누르면 rekordbox 크레이트에서 뽑은
+   랜덤 트랙의 30초 프리뷰(iTunes)가 니들 드랍처럼 이어진다.
+   프로그레시브 인핸스먼트 — 이 스크립트가 없으면 칩 자체가 나타나지 않는다.
+   previewUrl은 재생 시점에 lookup으로 해석한다 (URL 만료 대비). */
+(function () {
+  if (!window.fetch || !window.Promise) return;
+  var corner = document.getElementById('corner');
+  var chip = document.getElementById('chip');
+  var tgl = document.getElementById('radio-tgl');
+  var np = document.getElementById('radio-np');
+  var tc = document.getElementById('radio-tc');
+  var out = document.getElementById('radio-out');
+  var ann = document.getElementById('radio-ann');
+  if (!corner || !chip || !tgl) return;
+
+  chip.hidden = false;
+  var divider = corner.querySelector('.div');
+  if (divider) divider.hidden = false;
+
+  var audio = null;        /* 제스처 시점에 생성·언락해 재사용 — iOS 연속 재생 조건 */
+  var pool = null;
+  var poolReq = null;
+  var cache = {};          /* itunes id → {p: previewUrl, u: trackViewUrl} */
+  var queue = [], qi = -1, on = false;
+  var fadeTimer = null, fadingOut = false;
+  var gen = 0;             /* 세대 토큰 — stale 비동기 콜백 차단 */
+  var failedGen = -1;      /* 한 트랙의 실패 이중 계수 방지 */
+  var fails = 0;           /* 연속 실패 카운터 */
+  var MAXFAILS = 8;
+  var canFade = true;      /* iOS는 volume 제어 불가 — 감지해서 페이드 생략 */
+
+  /* 44.1kHz 모노 16bit 1샘플 무음 WAV — 첫 제스처에서 재생해 엘리먼트를 언락 */
+  function silentWav() {
+    var s = 'RIFF&\0\0\0WAVEfmt \x10\0\0\0\x01\0\x01\0D\xac\0\0\x88X\x01\0\x02\0\x10\0data\x02\0\0\0\0\0';
+    var b = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xff;
+    return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+  }
+
+  function ready() {
+    if (pool) return Promise.resolve(pool);
+    if (!poolReq) {
+      poolReq = fetch('data/radio.json')
+        .then(function (r) { if (!r.ok) throw new Error('radio ' + r.status); return r.json(); })
+        .then(function (d) { pool = Array.isArray(d.tracks) ? d.tracks : []; return pool; })
+        .catch(function (e) { poolReq = null; throw e; }); /* 다음 클릭에서 재시도 */
+    }
+    return poolReq;
+  }
+
+  function resolve(d) {
+    if (cache[d.id]) return Promise.resolve(cache[d.id]);
+    return fetch('https://itunes.apple.com/lookup?id=' + d.id)
+      .then(function (r) { if (!r.ok) throw new Error('lookup ' + r.status); return r.json(); })
+      .then(function (j) {
+        var res = j.results && j.results[0];
+        if (!res || !res.previewUrl) throw new Error('no preview');
+        cache[d.id] = { p: res.previewUrl, u: res.trackViewUrl || 'https://music.apple.com' };
+        return cache[d.id];
+      });
+  }
+
+  /* 가중 셔플: w<1인 트랙(오픈포맷 팝)은 사이클마다 확률 포함 + 같은 장르 연속 방지 */
+  function shuffle() {
+    var arr = pool.filter(function (t) { return !t.w || Math.random() < t.w; });
+    if (!arr.length) arr = pool.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    for (var k = 1; k < arr.length; k++) {
+      if (arr[k].g === arr[k - 1].g) {
+        for (var m = k + 1; m < arr.length; m++) {
+          if (arr[m].g !== arr[k - 1].g) { var s = arr[k]; arr[k] = arr[m]; arr[m] = s; break; }
+        }
+      }
+    }
+    return arr;
+  }
+
+  function fadeTo(vol, ms, done) {
+    clearInterval(fadeTimer);
+    if (!canFade || Math.abs(vol - audio.volume) < 0.01) {
+      try { audio.volume = vol; } catch (e) { /* 무시 */ }
+      if (done) done();
+      return;
+    }
+    var step = (vol - audio.volume) / Math.max(ms / 50, 1);
+    fadeTimer = setInterval(function () {
+      var v = audio.volume + step;
+      if ((step > 0 && v >= vol) || (step < 0 && v <= vol)) {
+        try { audio.volume = vol; } catch (e) { /* 무시 */ }
+        clearInterval(fadeTimer);
+        if (done) done();
+      } else {
+        try { audio.volume = v; } catch (e) { /* 무시 */ }
+      }
+    }, 50);
+  }
+
+  function fmt(t) {
+    var s = Math.floor(t || 0);
+    return '0' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+  }
+
+  function refreshTrunc() {
+    var truncated = np.scrollWidth > np.clientWidth + 1;
+    np.classList.toggle('trunc', truncated);
+    np.style.setProperty('--shift', (np.clientWidth - np.scrollWidth) + 'px');
+  }
+
+  function caption(d) {
+    np.textContent = '';
+    var inSpan = document.createElement('span');
+    inSpan.className = 'in';
+    var b = document.createElement('b');
+    b.textContent = d.a + ' — ' + d.t;
+    inSpan.appendChild(b);
+    inSpan.appendChild(document.createTextNode(' · ' + d.m));
+    np.appendChild(inSpan);
+    refreshTrunc();
+  }
+
+  function fail(g) {
+    if (g === failedGen) return;
+    failedGen = g;
+    fails++;
+    if (fails >= MAXFAILS) {
+      stopRadio();
+      ann.textContent = 'crate radio unavailable';
+      return;
+    }
+    next();
+  }
+
+  function play(i) {
+    qi = i;
+    var d = queue[qi];
+    if (!d) return;
+    var g = ++gen;
+    fadingOut = false;
+    caption(d);
+    tc.textContent = '00:00';
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.metadata = new MediaMetadata({ title: d.t, artist: d.a }); } catch (e) { /* 무시 */ }
+    }
+    resolve(d).then(function (r) {
+      if (g !== gen || !on) return;
+      out.href = r.u;
+      try { audio.volume = canFade ? 0 : 1; } catch (e) { /* 무시 */ }
+      audio.src = r.p;
+      return audio.play().then(function () {
+        if (g !== gen || !on) return;
+        fails = 0;
+        fadeTo(1, 800);
+      });
+    }).catch(function () {
+      if (g !== gen || !on) return;
+      fail(g);
+    });
+  }
+
+  function next() {
+    if (!queue.length) return;
+    var last = queue[qi];
+    qi++;
+    if (qi >= queue.length) {
+      queue = shuffle();
+      if (!queue.length) return;
+      /* 리셔플 경계에서 같은 곡 연속 방지 */
+      if (last && queue[0].id === last.id && queue.length > 1) {
+        var t = queue[0]; queue[0] = queue[1]; queue[1] = t;
+      }
+      qi = 0;
+    }
+    play(qi);
+  }
+
+  function start() {
+    if (!audio) {
+      audio = new Audio();
+      audio.src = silentWav();          /* 제스처 안의 무음 재생 = 언락 */
+      audio.play().catch(function () { /* 무시 */ });
+      try { audio.volume = 0.5; canFade = audio.volume < 0.9; audio.volume = 1; } catch (e) { canFade = false; }
+      audio.addEventListener('ended', function () { if (on) next(); });
+      audio.addEventListener('timeupdate', function () {
+        if (!on || !audio.duration) return;
+        tc.textContent = fmt(audio.currentTime);
+        if (canFade && !fadingOut && audio.duration - audio.currentTime < 2) {
+          fadingOut = true;
+          fadeTo(0, 1800);
+        }
+      });
+      audio.addEventListener('error', function () { if (on && queue.length) fail(gen); });
+      if ('mediaSession' in navigator) {
+        try { navigator.mediaSession.setActionHandler('nexttrack', function () { if (on) next(); }); } catch (e) { /* 무시 */ }
+      }
+    }
+    on = true;
+    fails = 0;
+    chip.classList.add('playing');
+    corner.classList.add('live');
+    tgl.setAttribute('aria-pressed', 'true');
+    ready().then(function () {
+      if (!on) return;
+      if (!pool.length) throw new Error('empty pool');
+      queue = shuffle();
+      qi = -1;
+      next();
+      ann.textContent = 'on air — ' + np.textContent;
+    }).catch(function () {
+      if (!on) return;
+      stopRadio();
+      ann.textContent = 'crate radio unavailable';
+    });
+  }
+
+  function stopRadio() {
+    on = false;
+    gen++;                              /* 진행 중이던 모든 비동기 무효화 */
+    clearInterval(fadeTimer);
+    if (audio) {
+      if (canFade) {
+        fadeTo(0, 350, function () { if (!on) audio.pause(); });
+        setTimeout(function () { if (!on) audio.pause(); }, 600); /* pause 보장 백스톱 */
+      } else {
+        audio.pause();
+      }
+    }
+    chip.classList.remove('playing');
+    corner.classList.remove('live');
+    tgl.setAttribute('aria-pressed', 'false');
+  }
+
+  tgl.addEventListener('click', function () { on ? stopRadio() : start(); });
+  document.getElementById('radio-skip').addEventListener('click', function () {
+    if (!on) return;
+    next();
+    ann.textContent = np.textContent;   /* 사용자 조작만 announce — 자동 전환은 침묵 */
+  });
+  document.getElementById('radio-stop').addEventListener('click', stopRadio);
+  window.addEventListener('resize', refreshTrunc);
+})();

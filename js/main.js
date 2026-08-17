@@ -25,7 +25,9 @@ function applyLang() {
     el.innerHTML = lang === 'ko' ? el.dataset.ko : el.dataset.en;
   });
   const sw = document.getElementById('langsw');
-  sw.innerHTML = lang === 'en' ? '<b>EN</b> | KO' : 'EN | <b>KO</b>';
+  sw.innerHTML = lang === 'en'
+    ? '<span class="cur">en</span><span class="alt">ko</span>'
+    : '<span class="alt">en</span><span class="cur">ko</span>';
   renderWork();
 }
 
