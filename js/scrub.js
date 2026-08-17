@@ -26,13 +26,25 @@
   var chapters = stage.querySelectorAll('.chapter');
   var bounds = [0, 0.22, 0.5, 0.78];
   var activeCh = 0;
+  var routeBtns = stage.querySelectorAll('.route button');
 
   function setChapter(i) {
     if (i === activeCh || !chapters[i]) return;
     if (chapters[activeCh]) chapters[activeCh].classList.remove('on');
     chapters[i].classList.add('on');
+    if (routeBtns[activeCh]) routeBtns[activeCh].removeAttribute('aria-current');
+    if (routeBtns[i]) routeBtns[i].setAttribute('aria-current', 'step');
     activeCh = i;
   }
+
+  routeBtns.forEach(function (btn, i) {
+    btn.addEventListener('click', function () {
+      /* 챕터 시작점보다 살짝 안쪽으로 점프 */
+      var p = Math.min(bounds[i] + 0.04, 0.999);
+      window.scrollTo({ top: rootTop + p * total, behavior: 'smooth' });
+    });
+  });
+  if (routeBtns[0]) routeBtns[0].setAttribute('aria-current', 'step');
 
   function layout() {
     var pageY = window.scrollY || window.pageYOffset;
@@ -90,6 +102,11 @@
   function tick() {
     var y = (window.scrollY || window.pageYOffset) - rootTop;
     target = Math.min(1, Math.max(0, y / total));
+    /* 히어로를 한 화면 이상 지나면 시킹·챕터 연산을 쉰다 */
+    if (y > total + window.innerHeight) {
+      window.requestAnimationFrame(tick);
+      return;
+    }
     if (video && ready && !video.seeking) {
       current += (target - current) * 0.2;
       var t = Math.min(0.999, Math.max(0, current)) * (video.duration || 1);
