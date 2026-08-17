@@ -31,10 +31,11 @@
   var mutedMode = false;   /* 소리 자동재생 차단 시: 음소거로 먼저 방송 시작, 첫 제스처에 unmute */
   var FORCE_MUTED = /[?&]radio=muted/.test(location.search); /* 기기 테스트용 강제 경로 */
 
-  /* 명시적으로 끈 방문자는 기억하고 다음 방문에 자동 시작하지 않는다 */
+  /* 명시적으로 끈 선택은 이번 방문(세션)에서만 기억 — 새 방문엔 다시 자동 개국.
+     (영구 기억은 소유자·재방문자의 "기본 켜짐" 의도와 충돌해서 세션 한정으로 변경) */
   var store = {
-    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 무시 */ } }
+    get: function (k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* 무시 */ } }
   };
 
   /* 44.1kHz 모노 16bit 1샘플 무음 WAV — 첫 제스처에서 재생해 엘리먼트를 언락 */
