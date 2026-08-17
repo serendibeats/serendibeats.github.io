@@ -178,6 +178,11 @@ a { color: inherit; text-decoration: none; }
 .chip.playing .live-info { display: flex; animation: radio-fadeslide 0.2s ease-out; }
 @keyframes radio-fadeslide { from { opacity: 0; transform: translateX(4px); } }
 .chip .tc { color: var(--accent); font-variant-numeric: tabular-nums; flex: none; } /* 프로그레스 바 대신 타임코드 */
+/* 음소거 방송 상태: 타임코드 대신 안내, 글리프는 정지 */
+.chip .mu { display: none; color: var(--text-dim); flex: none; }
+.chip.muted .mu { display: inline; }
+.chip.muted .tc { display: none; }
+.chip.muted .glyph { animation: none; opacity: 0.6; }
 .chip .np {
   min-width: 0; max-width: min(38vw, 300px);
   color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

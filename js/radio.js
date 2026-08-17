@@ -28,6 +28,8 @@
   var fails = 0;           /* 연속 실패 카운터 */
   var MAXFAILS = 8;
   var canFade = true;      /* iOS는 volume 제어 불가 — 감지해서 페이드 생략 */
+  var mutedMode = false;   /* 소리 자동재생 차단 시: 음소거로 먼저 방송 시작, 첫 제스처에 unmute */
+  var FORCE_MUTED = /[?&]radio=muted/.test(location.search); /* 기기 테스트용 강제 경로 */
 
   /* 명시적으로 끈 방문자는 기억하고 다음 방문에 자동 시작하지 않는다 */
   var store = {
@@ -157,6 +159,7 @@
       if (g !== gen || !on) return;
       out.href = r.u;
       try { audio.volume = canFade ? 0 : 1; } catch (e) { /* 무시 */ }
+      audio.muted = mutedMode;
       audio.src = r.p;
       return audio.play().then(function () {
         if (g !== gen || !on) return;
@@ -232,8 +235,17 @@
     });
   }
 
+  function unmute(userInitiated) {
+    mutedMode = false;
+    chip.classList.remove('muted');
+    if (userInitiated) store.set('radio', 'on');
+    if (audio) { try { audio.muted = false; } catch (e) { /* 무시 */ } }
+  }
+
   function stopRadio(userInitiated) {
     if (userInitiated) store.set('radio', 'off');
+    mutedMode = false;
+    chip.classList.remove('muted');
     on = false;
     gen++;                              /* 진행 중이던 모든 비동기 무효화 */
     clearInterval(fadeTimer);
@@ -250,7 +262,10 @@
     tgl.setAttribute('aria-pressed', 'false');
   }
 
-  tgl.addEventListener('click', function () { on ? stopRadio(true) : start(false); });
+  tgl.addEventListener('click', function () {
+    if (on && mutedMode) { unmute(true); return; } /* 음소거 방송 중 토글 = unmute */
+    on ? stopRadio(true) : start(false);
+  });
   document.getElementById('radio-skip').addEventListener('click', function () {
     if (!on) return;
     next();
@@ -266,6 +281,7 @@
     var t = e.target;
     if (t && t.closest && (t.closest('.corner') || t.closest('a[href]'))) return;
     disarmGesture();
+    if (on && mutedMode) { unmute(false); return; }  /* 음소거 방송 중 첫 제스처 = 소리 on */
     if (!on && store.get('radio') !== 'off') start(true);
   }
   function disarmGesture() {
@@ -283,7 +299,7 @@
     var probe = new Audio(purl);
     /* revoke는 지연 — 엘리먼트가 로드 중 URL을 잃으면 콘솔에 에러가 남는다 */
     var cleanup = function () { setTimeout(function () { URL.revokeObjectURL(purl); }, 3000); };
-    var p = probe.play();
+    var p = FORCE_MUTED ? Promise.reject(new Error('forced')) : probe.play();
     if (p && p.then) {
       p.then(function () {
         probe.pause();
@@ -291,7 +307,15 @@
         if (!on) start(true);            /* 자동재생 허용 브라우저 — 바로 시작 */
       }).catch(function () {
         cleanup();
-        armGesture();                    /* 차단됨 */
+        /* 소리 차단 — 음소거 방송으로 즉시 개국 (음소거 autoplay는 대부분 허용),
+           첫 제스처가 unmute. 음소거조차 거부되면(iOS 오디오) play catch가
+           off로 접고 제스처 시작으로 폴백한다. */
+        if (!on && store.get('radio') !== 'off') {
+          mutedMode = true;
+          chip.classList.add('muted');
+          start(true);
+        }
+        armGesture();
       });
     }
   }
