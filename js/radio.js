@@ -163,8 +163,14 @@
         fails = 0;
         fadeTo(1, 800);
       });
-    }).catch(function () {
+    }).catch(function (err) {
       if (g !== gen || !on) return;
+      if (err && err.name === 'NotAllowedError') {
+        /* 자동재생 정책 거부 — 트랙 실패가 아니므로 조용히 접고 다음 제스처를 기다린다 */
+        stopRadio(false);
+        armGesture();
+        return;
+      }
       fail(g);
     });
   }
@@ -265,18 +271,27 @@
   function disarmGesture() {
     document.removeEventListener('pointerdown', onGesture, true);
   }
+  function armGesture() {
+    if (store.get('radio') === 'off') return;
+    /* 첫 포인터 제스처에서 시작 (키보드는 의도적 토글만 — SR 사용자 배려) */
+    document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
+  }
   function autoArm() {
     if (store.get('radio') === 'off') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var probe = new Audio(silentWav());
+    var purl = silentWav();
+    var probe = new Audio(purl);
+    /* revoke는 지연 — 엘리먼트가 로드 중 URL을 잃으면 콘솔에 에러가 남는다 */
+    var cleanup = function () { setTimeout(function () { URL.revokeObjectURL(purl); }, 3000); };
     var p = probe.play();
     if (p && p.then) {
       p.then(function () {
         probe.pause();
+        cleanup();
         if (!on) start(true);            /* 자동재생 허용 브라우저 — 바로 시작 */
       }).catch(function () {
-        /* 차단됨 — 첫 포인터 제스처에서 시작 (키보드는 의도적 토글만) */
-        document.addEventListener('pointerdown', onGesture, { capture: true, passive: true });
+        cleanup();
+        armGesture();                    /* 차단됨 */
       });
     }
   }
