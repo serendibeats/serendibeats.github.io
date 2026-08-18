@@ -5,16 +5,34 @@
 (function () {
   if (!window.fetch || !window.Promise) return;
   var corner = document.getElementById('corner');
+  if (!corner) return;
+
+  /* 칩 마크업은 이 스크립트가 소유·주입한다 — 페이지엔 빈 .corner(+langsw)만 두면 되고,
+     컨트롤·aria 변경이 파일 한 곳으로 수렴한다 (no-JS에선 칩이 안 보이는 게 의도라 손실 없음) */
+  corner.insertAdjacentHTML('afterbegin',
+    '<span class="hint" id="radio-hint" aria-hidden="true" hidden>sound on — <span class="tap">tap</span><span class="clk">click</span> anywhere</span>' +
+    '<div class="chip" id="chip"><div class="core">' +
+    '<button class="tgl" id="radio-tgl" aria-pressed="false" aria-label="on air — crate radio, random tracks from the crate">' +
+    '<span class="glyph" aria-hidden="true"></span><span class="lab">on air</span></button>' +
+    '<span class="live-info">' +
+    '<span class="mu" aria-hidden="true">muted — <span class="tap">tap</span><span class="clk">click</span> for sound</span>' +
+    '<span class="np" id="radio-np"></span>' +
+    '<span class="ctl"><button id="radio-skip" aria-label="Next track">→</button>' +
+    '<a id="radio-out" href="https://music.apple.com" target="_blank" rel="noopener" aria-label="Open current track in Apple Music">↗</a>' +
+    '<button id="radio-stop" aria-label="Stop radio">×</button></span>' +
+    '</span></div></div>');
+  var langsw = corner.querySelector('.langsw');
+  if (langsw) langsw.insertAdjacentHTML('beforebegin', '<span class="div" aria-hidden="true"></span>');
+  var ann = document.getElementById('radio-ann');
+  if (!ann) {
+    ann = document.createElement('span');
+    ann.className = 'sr'; ann.id = 'radio-ann'; ann.setAttribute('aria-live', 'polite');
+    document.body.appendChild(ann);
+  }
   var chip = document.getElementById('chip');
   var tgl = document.getElementById('radio-tgl');
   var np = document.getElementById('radio-np');
   var out = document.getElementById('radio-out');
-  var ann = document.getElementById('radio-ann');
-  if (!corner || !chip || !tgl) return;
-
-  chip.hidden = false;
-  var divider = corner.querySelector('.div');
-  if (divider) divider.hidden = false;
 
   var audio = null;        /* 제스처 시점에 생성·언락해 재사용 — iOS 연속 재생 조건 */
   var pool = null;
@@ -29,6 +47,11 @@
   var canFade = true;      /* iOS는 volume 제어 불가 — 감지해서 페이드 생략 */
   var mutedMode = false;   /* 소리 자동재생 차단 시: 음소거로 먼저 방송 시작, 첫 제스처에 unmute */
   var FORCE_MUTED = /[?&]radio=muted/.test(location.search); /* 기기 테스트용 강제 경로 */
+  var resumeAt = 0;        /* 페이지 이동 이어듣기 — 직전 페이지가 남긴 재생 위치(초) */
+  var lastSave = 0;
+  var soundingId = null;   /* 지금 실제로 소리 나는 트랙 — 전환 창(lookup 중)의 오염 저장 방지 */
+  /* 사이트 루트: 스크립트 자기 위치에서 유도 — 루트/하위 경로 배포 모두 성립 */
+  var BASE = (document.currentScript && document.currentScript.src || '').replace(/js\/radio\.js.*$/, '');
 
   /* 명시적으로 끈 선택은 이번 방문(세션)에서만 기억 — 새 방문엔 다시 자동 개국.
      (영구 기억은 소유자·재방문자의 "기본 켜짐" 의도와 충돌해서 세션 한정으로 변경) */
@@ -48,7 +71,7 @@
   function ready() {
     if (pool) return Promise.resolve(pool);
     if (!poolReq) {
-      poolReq = fetch('data/radio.json')
+      poolReq = fetch(BASE + 'data/radio.json')
         .then(function (r) { if (!r.ok) throw new Error('radio ' + r.status); return r.json(); })
         .then(function (d) { pool = Array.isArray(d.tracks) ? d.tracks : []; return pool; })
         .catch(function (e) { poolReq = null; throw e; }); /* 다음 클릭에서 재시도 */
@@ -127,6 +150,21 @@
     refreshTrunc();
   }
 
+  /* 이어듣기: 재생 위치를 세션에 남겨 다음 페이지가 같은 곡·같은 위치에서 잇는다 */
+  function savePos() {
+    /* soundingId: 트랙 전환 창(qi는 새 곡, 소리는 옛 곡)의 오염 쌍 저장을 차단.
+       fadingOut: 페이드아웃 구간은 "다음 페이지에선 새 곡"이 의도라 저장하지 않는다 */
+    if (!on || !soundingId || !audio || fadingOut) return;
+    try {
+      sessionStorage.setItem('radio-pos', JSON.stringify({
+        id: soundingId, t: audio.currentTime || 0, d: audio.duration || 0
+      }));
+    } catch (e) { /* 무시 */ }
+  }
+  function clearPos() {
+    try { sessionStorage.removeItem('radio-pos'); } catch (e) { /* 무시 */ }
+  }
+
   function fail(g) {
     if (g === failedGen) return;
     failedGen = g;
@@ -144,6 +182,8 @@
     var d = queue[qi];
     if (!d) return;
     var g = ++gen;
+    soundingId = null; /* 전환 창 동안 위치 저장 금지 — src 교체 후 재설정 */
+    var seekTo = resumeAt; resumeAt = 0; /* 이어듣기 위치는 첫 재생 시도에만 소모 */
     fadingOut = false;
     caption(d);
     if ('mediaSession' in navigator) {
@@ -155,6 +195,14 @@
       try { audio.volume = canFade ? 0 : 1; } catch (e) { /* 무시 */ }
       audio.muted = mutedMode;
       audio.src = r.p;
+      soundingId = d.id;
+      if (seekTo > 0) {
+        var onMeta = function () {
+          audio.removeEventListener('loadedmetadata', onMeta);
+          if (g === gen) { try { audio.currentTime = seekTo; } catch (e) { /* 무시 */ } }
+        };
+        audio.addEventListener('loadedmetadata', onMeta);
+      }
       return audio.play().then(function () {
         if (g !== gen || !on) return;
         fails = 0;
@@ -163,7 +211,9 @@
     }).catch(function (err) {
       if (g !== gen || !on) return;
       if (err && err.name === 'NotAllowedError') {
-        /* 자동재생 정책 거부 — 트랙 실패가 아니므로 조용히 접고 다음 제스처를 기다린다 */
+        /* 자동재생 정책 거부 — 트랙 실패가 아니므로 조용히 접고 다음 제스처를 기다린다.
+           이어듣기 위치는 소모하지 않는다 (제스처 시작 시 같은 위치에서 재개) */
+        if (seekTo) resumeAt = seekTo;
         stopRadio(false);
         armGesture();
         return;
@@ -200,10 +250,18 @@
       audio.addEventListener('ended', function () { if (on) next(); });
       audio.addEventListener('timeupdate', function () {
         if (!on || !audio.duration) return;
+        var now = Date.now();
+        if (now - lastSave > 1000) { lastSave = now; savePos(); } /* 이어듣기 위치 기록 */
         if (canFade && !fadingOut && audio.duration - audio.currentTime < 2) {
           fadingOut = true;
           fadeTo(0, 1800);
         }
+      });
+      window.addEventListener('pagehide', savePos); /* 이탈 직전 최종 위치 */
+      window.addEventListener('pageshow', function (e) {
+        /* bfcache 복귀: 브라우저가 미디어를 정지시켰다면 되살리고, 막히면 정직하게 off */
+        if (!e.persisted || !on || !audio) return;
+        if (audio.paused) audio.play().catch(function () { stopRadio(false); armGesture(); });
       });
       audio.addEventListener('error', function () { if (on && queue.length) fail(gen); });
       if ('mediaSession' in navigator) {
@@ -237,7 +295,7 @@
   }
 
   function stopRadio(userInitiated) {
-    if (userInitiated) store.set('radio', 'off');
+    if (userInitiated) { store.set('radio', 'off'); clearPos(); }
     mutedMode = false;
     chip.classList.remove('muted');
     on = false;
@@ -267,13 +325,25 @@
   });
   document.getElementById('radio-stop').addEventListener('click', function () { stopRadio(true); });
   window.addEventListener('resize', refreshTrunc);
+  /* 글의 <video> 재생과 공존: 클립을 틀면 라디오는 접고(세션 선호 불변),
+     클립이 도는 동안엔 제스처 자동 시작도 하지 않는다 */
+  function videoPlaying() {
+    var vs = document.getElementsByTagName('video');
+    for (var i = 0; i < vs.length; i++) if (!vs[i].paused && !vs[i].ended) return true;
+    return false;
+  }
+  document.addEventListener('play', function (e) {
+    if (e.target && e.target.tagName === 'VIDEO' && on) { stopRadio(false); armGesture(); }
+  }, true);
 
   /* ── 기본 on air: 로드 시 자동재생을 시도하고, 차단되면 첫 제스처에서 시작 ──
      끈 적 있는 방문자(localStorage)와 reduced-motion 환경은 건드리지 않는다. */
   function onGesture(e) {
     /* 코너 자체(토글이 처리)와 링크(페이지 이탈 중 소리 방지)는 제외 */
     var t = e.target;
-    if (t && t.closest && (t.closest('.corner') || t.closest('a[href]'))) return;
+    /* 코너(토글이 처리)·링크(이탈 중 소리 방지)·비디오(클립 재생 조작) 제외 */
+    if (t && t.closest && (t.closest('.corner') || t.closest('a[href]') || t.closest('video'))) return;
+    if (videoPlaying()) return; /* 클립 감상 중 — 위로 겹치지 않는다 */
     disarmGesture();
     if (on && mutedMode) { unmute(false); return; }  /* 음소거 방송 중 첫 제스처 = 소리 on */
     if (!on && store.get('radio') !== 'off') start(true);
@@ -335,6 +405,28 @@
   ready().then(function () {
     if (!queue.length && pool.length) {
       queue = shuffle();
+      /* 이어듣기: 직전 페이지가 남긴 곡을 큐 맨 앞으로, 위치도 복원 (페이드아웃 구간이면 새로 시작) */
+      var saved = null;
+      try { saved = JSON.parse(sessionStorage.getItem('radio-pos') || 'null'); } catch (e) { /* 무시 */ }
+      if (saved && saved.id && saved.t > 0.5 && saved.d > 0 && saved.t < saved.d - 3) {
+        for (var i = 0; i < pool.length; i++) {
+          if (pool[i].id === saved.id) {
+            var keep = pool[i];
+            queue = queue.filter(function (t) { return t.id !== saved.id; });
+            queue.unshift(keep);
+            resumeAt = saved.t;
+            /* 낙관 페인트: 직전 페이지에서 재생 중이던 방송이므로 코너를 미리 이어진 모습으로.
+               자동재생이 거부되면 NotAllowedError 경로의 stopRadio가 되돌린다 */
+            if (store.get('radio') !== 'off' &&
+                !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              caption(keep);
+              chip.classList.add('playing');
+              corner.classList.add('live');
+            }
+            break;
+          }
+        }
+      }
       resolve(queue[0]).catch(function () { /* 예열 실패는 재생 시점에 재시도 */ });
     }
   }).catch(function () { /* 첫 클릭에서 재시도 */ });

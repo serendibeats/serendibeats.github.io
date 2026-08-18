@@ -14,240 +14,26 @@
 <meta property="og:description" content="감성 콘텐츠 생산을 자동화할 수 있을까 — 5일의 검증 기록.">
 <meta property="og:url" content="https://serendibeats.github.io/log/vibe-pipeline/">
 <meta property="og:image" content="https://serendibeats.github.io/log/vibe-pipeline/img/cp-a.jpg">
-<style>
-:root {
-  color-scheme: dark;
-  --bg: #0f0d0b;
-  --bg-raise: #16130f;
-  --text: #e7e0d4;
-  --dim: #9c937f;
-  --accent: #c9924a;
-  --cool: #8fa8c0;
-  --line: #2a251d;
-  --serif: Georgia, "Times New Roman", "Noto Serif KR", serif;
-  --sans: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Helvetica Neue", sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, monospace;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0; background: var(--bg); color: var(--text);
-  font-family: var(--sans); font-size: 16px; line-height: 1.9;
-  -webkit-font-smoothing: antialiased;
-}
-::selection { background: rgba(201, 146, 74, 0.35); }
-:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
-a { color: inherit; text-decoration: none; }
-
-.wrap { max-width: 680px; margin: 0 auto; padding: 0 22px; }
-
-/* ── 상단 내비 ── */
-.top {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: 26px 0 0;
-  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em;
-}
-.top a { color: var(--dim); border-bottom: 1px solid transparent; }
-.top a:hover { color: var(--cool); border-color: var(--cool); }
-
-/* ── 헤더 ── */
-header.head { padding: 74px 0 0; }
-.kicker {
-  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
-}
-h1 {
-  font-family: var(--serif); font-weight: 600;
-  font-size: clamp(2rem, 6vw, 3.1rem); line-height: 1.25;
-  margin: 0 0 14px; letter-spacing: -0.01em;
-}
-.standfirst {
-  font-size: 1.05rem; color: var(--dim); margin: 0 0 22px; max-width: 34em;
-}
-.meta {
-  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
-  color: var(--dim); margin: 0 0 34px;
-}
-.meta em { font-style: normal; color: var(--accent); }
-
-/* ── 그림 공통 ── */
-figure { margin: 1.8em 0; }
-figure img { width: 100%; display: block; border: 1px solid var(--line); }
-figcaption {
-  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.04em;
-  color: var(--dim); margin-top: 9px; line-height: 1.7;
-}
-.banner { margin: 0 0 10px; }
-.banner img { height: min(46vh, 420px); object-fit: cover; object-position: center 42%; }
-
-/* ── 스탯 ── */
-.stats {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 12px;
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  padding: 20px 0; margin: 38px 0 0;
-}
-.stats div { line-height: 1.4; }
-.stats b { display: block; font-family: var(--serif); font-weight: 600; font-size: 1.3rem; }
-.stats span {
-  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--dim);
-}
-
-/* ── 본문 ── */
-article { padding: 26px 0 0; }
-article section { margin: 56px 0 0; }
-.when {
-  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
-}
-h2 {
-  font-family: var(--serif); font-weight: 600; font-size: 1.42rem;
-  line-height: 1.4; margin: 0 0 16px; letter-spacing: -0.005em;
-}
-h3 {
-  font-family: var(--serif); font-weight: 600; font-size: 1.08rem;
-  line-height: 1.5; margin: 2em 0 10px;
-}
-article p { margin: 0 0 1.15em; }
-article p:last-child { margin-bottom: 0; }
-article em { font-style: normal; color: var(--accent); }
-article a { border-bottom: 1px solid rgba(201, 146, 74, 0.45); }
-article a:hover { color: var(--cool); border-color: var(--cool); }
-article code {
-  font-family: var(--mono); font-size: 0.82em; color: var(--text);
-  background: var(--bg-raise); border: 1px solid var(--line);
-  padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere;
-}
-
-/* 인용 — 세션·문서에서 그대로 가져온 말 */
-blockquote {
-  margin: 1.5em 0; padding: 2px 0 2px 20px;
-  border-left: 1px solid var(--accent);
-  font-family: var(--serif); font-size: 1.06rem; line-height: 1.75; color: var(--text);
-}
-blockquote .src {
-  display: block; margin-top: 8px;
-  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--dim);
-}
-
-/* 세션 로그·디스코드 재현 */
-.term {
-  margin: 1.5em 0; padding: 16px 18px;
-  background: var(--bg-raise); border: 1px solid var(--line);
-  font-family: var(--mono); font-size: 0.78rem; line-height: 2.1; color: var(--dim);
-}
-.term div { margin: 0 0 2px; }
-.term b { font-weight: 400; color: var(--accent); display: inline-block; min-width: 3.6em; }
-.term i { font-style: normal; color: var(--text); }
-.disc {
-  margin: 1.5em 0; padding: 16px 18px;
-  background: var(--bg-raise); border: 1px solid var(--line);
-  font-family: var(--mono); font-size: 0.74rem; line-height: 1.9; color: var(--dim);
-}
-.disc .ch { color: var(--accent); letter-spacing: 0.06em; margin-bottom: 8px; }
-.disc .att { color: var(--dim); opacity: 0.7; font-style: italic; }
-.disc .tags { color: var(--text); word-break: keep-all; overflow-wrap: anywhere; }
-.disc .tags b { color: var(--accent); font-weight: 400; }
-
-/* 표 */
-.tbl { margin: 1.5em 0; overflow-x: auto; }
-table {
-  border-collapse: collapse; width: 100%;
-  font-size: 0.82rem; line-height: 1.7;
-}
-th {
-  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--dim); font-weight: 400;
-  text-align: left; padding: 8px 14px 8px 0;
-  border-bottom: 1px solid var(--line);
-}
-td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-td:last-child, th:last-child { padding-right: 0; }
-.ok { color: var(--accent); font-family: var(--mono); font-size: 0.72rem; }
-.no { color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
-
-/* A/B 그리드 */
-.ab { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ab img { width: 100%; display: block; border: 1px solid var(--line); }
-.ab figcaption { display: flex; justify-content: space-between; gap: 8px; }
-.tag-ok { color: var(--accent); }
-.tag-no { color: var(--dim); }
-
-/* 세 줄 요약 */
-.tldr {
-  margin: 34px 0 0; padding: 18px 20px;
-  background: var(--bg-raise); border: 1px solid var(--line);
-}
-.tldr .lb {
-  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
-}
-.tldr p { margin: 0 0 6px; font-size: 0.95rem; line-height: 1.75; }
-.tldr p:last-child { margin: 0; }
-.tldr b { font-weight: 600; color: var(--accent); }
-
-/* 영상 */
-video {
-  width: 100%; display: block; border: 1px solid var(--line);
-  background: var(--bg-raise);
-}
-.vid-solo { max-width: 320px; }
-.vid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.vid-grid figcaption { display: flex; justify-content: space-between; gap: 8px; }
-
-/* 생성물 갤러리 */
-.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.gal figure { margin: 0; }
-.gal img { width: 100%; display: block; border: 1px solid var(--line); }
-.gal figcaption { margin-top: 6px; }
-
-/* 리스트 */
-article ul { margin: 0 0 1.15em; padding-left: 1.15em; }
-article li { margin: 0 0 0.5em; }
-article li::marker { color: var(--accent); }
-
-/* ── 아카이브·출처 ── */
-.sources { margin: 64px 0 0; padding: 22px 0 0; border-top: 1px solid var(--line); }
-.sources h3 {
-  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--dim); font-weight: 400; margin: 0 0 12px;
-}
-.sources ul { list-style: none; margin: 0 0 26px; padding: 0; }
-.sources li {
-  font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.02em;
-  color: var(--dim); margin: 0 0 7px; line-height: 1.7;
-}
-.sources a { color: var(--text); border-bottom: 1px solid rgba(201, 146, 74, 0.45); }
-.sources a:hover { color: var(--cool); border-color: var(--cool); }
-
-footer {
-  margin: 70px 0 0; padding: 24px 0 46px; border-top: 1px solid var(--line);
-  display: flex; justify-content: space-between; gap: 12px;
-  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em; color: var(--dim);
-}
-footer a { border-bottom: 1px solid transparent; }
-footer a:hover { color: var(--cool); border-color: var(--cool); }
-
-@media (max-width: 560px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .ab { grid-template-columns: 1fr; }
-  .ab figcaption { justify-content: flex-start; }
-}
-</style>
+<link rel="stylesheet" href="../../css/tokens.css?v=20260819">
+<link rel="stylesheet" href="../../css/corner.css?v=20260819">
+<link rel="stylesheet" href="../../css/log.css?v=20260819">
 </head>
 <body>
+
+<!-- 우상단 크레이트 라디오 — 홈에서 듣던 방송이 여기로 이어진다 (칩은 radio.js가 주입) -->
+<div class="corner" id="corner"></div>
 
 <div class="wrap">
 
 <nav class="top">
   <a href="../../">← serendibeats</a>
-  <span>log / 001</span>
 </nav>
 
 <header class="head">
   <p class="kicker">Log · Experiment</p>
   <h1>느좋 파이프라인</h1>
   <p class="standfirst">감성 콘텐츠 생산을 자동화할 수 있을까 — AI 인플루언서 파이프라인 5일 검증 기록.</p>
-  <p class="meta">2026.08.14 – 08.18 · seoul · <em>closed</em></p>
+  <p class="meta">log / 001 · 2026.08.14 – 08.18 · seoul · <em>closed</em></p>
 </header>
 
 <figure class="banner">
@@ -578,10 +364,12 @@ footer a:hover { color: var(--cool); border-color: var(--cool); }
 
 <footer>
   <span>© 2026 serendibeats</span>
+  <span><a href="https://music.apple.com" target="_blank" rel="noopener">radio previews courtesy of Apple Music</a></span>
   <a href="../../">← back to the film</a>
 </footer>
 
 </div>
 
+<script src="../../js/radio.js?v=20260819"></script>
 </body>
 </html>

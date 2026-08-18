@@ -16,34 +16,16 @@
 <meta property="og:url" content="https://serendibeats.github.io/">
 <meta property="og:image" content="https://serendibeats.github.io/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/tokens.css?v=20260819">
+<link rel="stylesheet" href="css/corner.css?v=20260819">
+<link rel="stylesheet" href="css/style.css?v=20260819">
 </head>
 <body>
 
-<!-- 우상단 유틸리티 코너: 크레이트 라디오(JS가 켬) + 언어 스위치 -->
+<!-- 우상단 유틸리티 코너: 언어 스위치 + 크레이트 라디오(칩은 radio.js가 주입) -->
 <div class="corner" id="corner">
-  <span class="hint" id="radio-hint" aria-hidden="true" hidden>sound on — <span class="tap">tap</span><span class="clk">click</span> anywhere</span>
-  <div class="chip" id="chip" hidden>
-    <div class="core">
-      <button class="tgl" id="radio-tgl" aria-pressed="false" aria-label="on air — crate radio, random tracks from the crate">
-        <span class="glyph" aria-hidden="true"></span>
-        <span class="lab">on air</span>
-      </button>
-      <span class="live-info">
-        <span class="mu" aria-hidden="true">muted — <span class="tap">tap</span><span class="clk">click</span> for sound</span>
-        <span class="np" id="radio-np"></span>
-        <span class="ctl">
-          <button id="radio-skip" aria-label="Next track">→</button>
-          <a id="radio-out" href="https://music.apple.com" target="_blank" rel="noopener" aria-label="Open current track in Apple Music">↗</a>
-          <button id="radio-stop" aria-label="Stop radio">×</button>
-        </span>
-      </span>
-    </div>
-  </div>
-  <span class="div" aria-hidden="true" hidden></span>
   <button class="langsw" id="langsw" aria-label="Switch language"><span class="cur">en</span><span class="alt">ko</span></button>
 </div>
-<span class="sr" aria-live="polite" id="radio-ann"></span>
 
 <header class="hero">
   <div class="hero-stage">
@@ -106,8 +88,8 @@
   <span><a href="https://music.apple.com" target="_blank" rel="noopener">radio previews courtesy of Apple Music</a></span>
 </footer>
 
-<script src="js/main.js"></script>
-<script src="js/scrub.js"></script>
-<script src="js/radio.js?v=8"></script>
+<script src="js/main.js?v=20260819"></script>
+<script src="js/scrub.js?v=20260819"></script>
+<script src="js/radio.js?v=20260819"></script>
 </body>
 </html>

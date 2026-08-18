@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<!-- ══════════════════════════════════════════════════════════════
+  로그 글 템플릿 — 새 글 추가 절차:
+    1. 이 파일을 log/<slug>/index.html 로 복사
+    2. ◇ 표시를 전부 교체한다 — ◇가 하나라도 남아 있으면 발행 금지
+    3. 본문을 쓴다. 부품은 css/log.css 참조:
+       .when(날짜 키커) · blockquote(+.src) · .term(세션 로그) · .disc(디스코드 재현)
+       .tbl>table · figure(.banner/.ab/.gal/.vid-solo/.vid-grid) · .stats · .tldr
+       (배너·스탯·요약 골격은 아래 주석 블록을 풀어 쓴다 — article 앞에 둔다)
+    4. data/portfolio.json 의 "projects" 배열에 카드 추가 — 아래 조각을 붙여넣고 수정:
+       { "id": "◇slug", "category": "content", "status": "EXPERIMENT",
+         "title": { "en": "◇Title", "ko": "◇제목" },
+         "desc": { "en": "◇one-liner (written up in Korean).", "ko": "◇한 줄." },
+         "tags": ["◇태그"], "image": "log/◇slug/img/cover.jpg",
+         "links": { "site": "log/◇slug/" }, "date": "◇YYYY-MM" }
+       cover.jpg = 글 배너를 카드용으로 한 장 (없으면 image 줄 삭제 — 해칭 플레이스홀더로 뜸)
+    5. 발행 전 검사 (둘 다 통과해야 푸시):
+       grep -n '◇' log/<slug>/index.html          ← 빈 출력이어야 함
+       python3 -m json.tool data/portfolio.json    ← 에러 없어야 함
+  스타일·토큰·라디오 칩은 전부 공용(tokens/corner/log.css + radio.js 주입)이라 손댈 것 없음.
+  ?v= 값은 전 페이지 공통 상수 — 공용 CSS/JS를 고친 날짜로 전 파일 일괄 교체.
+═══════════════════════════════════════════════════════════════ -->
+<meta name="robots" content="noindex"><!-- ◇ 발행 시 이 줄 삭제 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>◇제목 — serendibeats</title>
+<meta name="description" content="◇한 줄 설명">
+<link rel="canonical" href="https://serendibeats.github.io/log/◇slug/">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../assets/favicon-32.png" type="image/png" sizes="32x32">
+<meta name="theme-color" content="#0f0d0b">
+<meta property="og:type" content="article">
+<meta property="og:title" content="◇제목">
+<meta property="og:description" content="◇한 줄 설명">
+<meta property="og:url" content="https://serendibeats.github.io/log/◇slug/">
+<meta property="og:image" content="https://serendibeats.github.io/log/◇slug/img/cover.jpg">
+<link rel="stylesheet" href="../../css/tokens.css?v=20260819">
+<link rel="stylesheet" href="../../css/corner.css?v=20260819">
+<link rel="stylesheet" href="../../css/log.css?v=20260819">
+</head>
+<body>
+
+<!-- 우상단 크레이트 라디오 — 홈에서 듣던 방송이 이어진다 (칩은 radio.js가 주입) -->
+<div class="corner" id="corner"></div>
+
+<div class="wrap">
+
+<nav class="top">
+  <a href="../../">← serendibeats</a>
+</nav>
+
+<header class="head">
+  <p class="kicker">Log · Experiment</p>
+  <h1>◇제목</h1>
+  <p class="standfirst">◇부제 — 한 문장.</p>
+  <p class="meta">◇log / 00N · 2026.MM.DD · seoul</p>
+</header>
+
+<!-- 배너·스탯·요약 골격 (필요하면 주석 해제 — article 앞이 정본 배치)
+<figure class="banner">
+  <img src="img/cover.jpg" alt="◇배너 설명" fetchpriority="high">
+  <figcaption>◇배너 캡션</figcaption>
+</figure>
+
+<div class="stats">
+  <div><b>◇N</b><span>label</span></div>
+</div>
+
+<div class="tldr">
+  <p class="lb">세 줄 요약</p>
+  <p><b>◇결론 1.</b> 부연.</p>
+</div>
+-->
+
+<article>
+
+<section id="s1">
+  <p class="when">◇MM.DD</p>
+  <h2>◇첫 섹션</h2>
+  <p>본문.</p>
+</section>
+
+</article>
+
+<footer>
+  <span>© 2026 serendibeats</span>
+  <span><a href="https://music.apple.com" target="_blank" rel="noopener">radio previews courtesy of Apple Music</a></span>
+  <a href="../../">← back to the film</a>
+</footer>
+
+</div>
+
+<script src="../../js/radio.js?v=20260819"></script>
+</body>
+</html>

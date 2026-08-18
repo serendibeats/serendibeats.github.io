@@ -1,0 +1,34 @@
+/* 디자인 토큰 — 사이트 전 페이지 공유 (Film Still 팔레트).
+   style.css에서 추출: 홈·로그 페이지가 같은 정본을 쓴다. */
+:root {
+  color-scheme: dark;
+  --bg: #0f0d0b;
+  --bg-raise: #16130f;
+  --text: #e7e0d4;
+  --text-dim: #9c937f;
+  --accent: #c9924a; /* 히어로 사진에서 추출한 앰버 — 정체성·활성 상태 */
+  --accent-cool: #8fa8c0; /* 필름의 새벽 창 블루(#567ca2)를 대비 기준으로 밝힘 — 호버 상태 */
+  --line: #2a251d;
+  --serif: Georgia, "Times New Roman", "Noto Serif KR", serif;
+  --sans: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* ── 전 페이지 공통 베이스 (style.css·log.css에서 통합 — 한 곳만 고친다) ── */
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--sans); line-height: 1.8; font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: rgba(201, 146, 74, 0.35); }
+:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+
+/* 페이지 간 전환 크로스페이드 — 같은 사이트로 이어지는 감각 (지원 브라우저만).
+   옵트인은 최상위에, 모션 억제는 의사요소에서 — 어느 엔진에서든 의도가 성립한다 */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

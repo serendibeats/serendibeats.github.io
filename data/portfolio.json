@@ -9,7 +9,11 @@
         "en": "Structured AI video production for macOS — storyboard first, generate without the gacha.",
         "ko": "구조화 AI 영상 제작 macOS 앱 — 스토리보드 우선, 갓챠 없는 생성 워크플로."
       },
-      "tags": ["macOS", "Swift", "AI"],
+      "tags": [
+        "macOS",
+        "Swift",
+        "AI"
+      ],
       "links": {},
       "date": "2026-08"
     },
@@ -17,14 +21,24 @@
       "id": "mood-pipeline",
       "category": "content",
       "status": "EXPERIMENT · CLOSED",
-      "title": { "en": "The Vibe Pipeline", "ko": "느좋 파이프라인" },
+      "title": {
+        "en": "The Vibe Pipeline",
+        "ko": "느좋 파이프라인"
+      },
       "desc": {
-        "en": "Can an automated pipeline generate 'aesthetic' AI-influencer content — without me as the bottleneck? A one-week probe, written up.",
+        "en": "Can an automated pipeline generate 'aesthetic' AI-influencer content — without me as the bottleneck? A one-week probe, written up (in Korean).",
         "ko": "'느좋' AI 인플루언서 콘텐츠를 내가 병목이 되지 않는 자동 파이프라인으로 뽑을 수 있을까? 일주일간의 검증 기록."
       },
-      "tags": ["Pinterest", "Discord", "AI Video"],
-      "links": { "site": "log/vibe-pipeline/" },
-      "date": "2026-08"
+      "tags": [
+        "Pinterest",
+        "Discord",
+        "AI Video"
+      ],
+      "links": {
+        "site": "log/vibe-pipeline/"
+      },
+      "date": "2026-08",
+      "image": "log/vibe-pipeline/img/cover.jpg"
     },
     {
       "id": "taste-archive",
@@ -35,8 +49,14 @@
         "en": "A Telegram channel of things I dug up by hand — music, AI, on-chain notes. No algorithm, just taste.",
         "ko": "직접 디깅한 것들을 기록하는 텔레그램 채널 — 음악, AI, 온체인. 알고리즘 추천 말고, 손으로 판 것들만."
       },
-      "tags": ["Telegram", "Curation", "2026–"],
-      "links": { "telegram": "https://t.me/by_serendibeats" },
+      "tags": [
+        "Telegram",
+        "Curation",
+        "2026–"
+      ],
+      "links": {
+        "telegram": "https://t.me/by_serendibeats"
+      },
       "date": "2026-07"
     },
     {
@@ -48,8 +68,13 @@
         "en": "An AI fashion-look Shorts channel, run as a 4-week experiment — 43 shorts, 18k views. Retrospective in three parts on the Telegram channel.",
         "ko": "4주간 실험한 AI 패션 룩 쇼츠 채널 — 쇼츠 43편, 총조회 1.8만 회. 회고는 텔레그램 채널에 3편 시리즈로."
       },
-      "tags": ["YouTube Shorts", "AI Video"],
-      "links": { "youtube": "https://www.youtube.com/@AriaLookAI" },
+      "tags": [
+        "YouTube Shorts",
+        "AI Video"
+      ],
+      "links": {
+        "youtube": "https://www.youtube.com/@AriaLookAI"
+      },
       "date": "2025-07"
     }
   ]

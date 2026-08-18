@@ -1,0 +1,201 @@
+/* 로그 글 공용 스타일 — 새 글은 이 파일을 링크만 하면 된다 (log/_template.html 참조).
+   토큰은 tokens.css, 우상단 라디오 코너는 corner.css가 담당. */
+/* 베이스는 tokens.css 소관 — 글은 행간만 더 넉넉하게 */
+body { line-height: 1.9; }
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 22px; }
+
+/* ── 상단 내비 ── */
+.top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 26px 0 0;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em;
+}
+.top a { color: var(--text-dim); border-bottom: 1px solid transparent; }
+.top a:hover { color: var(--accent-cool); border-color: var(--accent-cool); }
+/* 모바일: 고정 코너(라디오)가 상단 내비와 같은 y대역 — 내비를 아래로 밀어 겹침 방지 */
+@media (max-width: 700px) { .top { padding-top: 64px; } }
+
+/* ── 헤더 ── */
+header.head { padding: 74px 0 0; }
+.kicker {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+}
+h1 {
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(2rem, 6vw, 3.1rem); line-height: 1.25;
+  margin: 0 0 14px; letter-spacing: -0.01em;
+}
+.standfirst {
+  font-size: 1.05rem; color: var(--text-dim); margin: 0 0 22px; max-width: 34em;
+}
+.meta {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
+  color: var(--text-dim); margin: 0 0 34px;
+}
+.meta em { font-style: normal; color: var(--accent); }
+
+/* ── 그림 공통 ── */
+figure { margin: 1.8em 0; }
+figure img { width: 100%; display: block; border: 1px solid var(--line); }
+figcaption {
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.04em;
+  color: var(--text-dim); margin-top: 9px; line-height: 1.7;
+}
+.banner { margin: 0 0 10px; }
+.banner img { height: min(46vh, 420px); object-fit: cover; object-position: center 42%; }
+
+/* ── 스탯 ── */
+.stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 12px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 20px 0; margin: 38px 0 0;
+}
+.stats div { line-height: 1.4; }
+.stats b { display: block; font-family: var(--serif); font-weight: 600; font-size: 1.3rem; }
+.stats span {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+/* ── 본문 ── */
+article { padding: 26px 0 0; }
+article section { margin: 56px 0 0; }
+.when {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
+}
+h2 {
+  font-family: var(--serif); font-weight: 600; font-size: 1.42rem;
+  line-height: 1.4; margin: 0 0 16px; letter-spacing: -0.005em;
+}
+h3 {
+  font-family: var(--serif); font-weight: 600; font-size: 1.08rem;
+  line-height: 1.5; margin: 2em 0 10px;
+}
+article p { margin: 0 0 1.15em; }
+article p:last-child { margin-bottom: 0; }
+article em { font-style: normal; color: var(--accent); }
+article a { border-bottom: 1px solid rgba(201, 146, 74, 0.45); }
+article a:hover { color: var(--accent-cool); border-color: var(--accent-cool); }
+article code {
+  font-family: var(--mono); font-size: 0.82em; color: var(--text);
+  background: var(--bg-raise); border: 1px solid var(--line);
+  padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere;
+}
+
+/* 인용 — 세션·문서에서 그대로 가져온 말 */
+blockquote {
+  margin: 1.5em 0; padding: 2px 0 2px 20px;
+  border-left: 1px solid var(--accent);
+  font-family: var(--serif); font-size: 1.06rem; line-height: 1.75; color: var(--text);
+}
+blockquote .src {
+  display: block; margin-top: 8px;
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--text-dim);
+}
+
+/* 세션 로그·디스코드 재현 */
+.term {
+  margin: 1.5em 0; padding: 16px 18px;
+  background: var(--bg-raise); border: 1px solid var(--line);
+  font-family: var(--mono); font-size: 0.78rem; line-height: 2.1; color: var(--text-dim);
+}
+.term div { margin: 0 0 2px; }
+.term b { font-weight: 400; color: var(--accent); display: inline-block; min-width: 3.6em; }
+.term i { font-style: normal; color: var(--text); }
+.disc {
+  margin: 1.5em 0; padding: 16px 18px;
+  background: var(--bg-raise); border: 1px solid var(--line);
+  font-family: var(--mono); font-size: 0.74rem; line-height: 1.9; color: var(--text-dim);
+}
+.disc .ch { color: var(--accent); letter-spacing: 0.06em; margin-bottom: 8px; }
+.disc .att { color: var(--text-dim); opacity: 0.7; font-style: italic; }
+.disc .tags { color: var(--text); word-break: keep-all; overflow-wrap: anywhere; }
+.disc .tags b { color: var(--accent); font-weight: 400; }
+
+/* 표 */
+.tbl { margin: 1.5em 0; overflow-x: auto; }
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: 0.82rem; line-height: 1.7;
+}
+th {
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-dim); font-weight: 400;
+  text-align: left; padding: 8px 14px 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+td:last-child, th:last-child { padding-right: 0; }
+.ok { color: var(--accent); font-family: var(--mono); font-size: 0.72rem; }
+.no { color: var(--text-dim); font-family: var(--mono); font-size: 0.72rem; }
+
+/* A/B 그리드 */
+.ab { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ab img { width: 100%; display: block; border: 1px solid var(--line); }
+.ab figcaption { display: flex; justify-content: space-between; gap: 8px; }
+.tag-ok { color: var(--accent); }
+.tag-no { color: var(--text-dim); }
+
+/* 세 줄 요약 */
+.tldr {
+  margin: 34px 0 0; padding: 18px 20px;
+  background: var(--bg-raise); border: 1px solid var(--line);
+}
+.tldr .lb {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+}
+.tldr p { margin: 0 0 6px; font-size: 0.95rem; line-height: 1.75; }
+.tldr p:last-child { margin: 0; }
+.tldr b { font-weight: 600; color: var(--accent); }
+
+/* 영상 */
+video {
+  width: 100%; display: block; border: 1px solid var(--line);
+  background: var(--bg-raise);
+}
+.vid-solo { max-width: 320px; }
+.vid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vid-grid figcaption { display: flex; justify-content: space-between; gap: 8px; }
+
+/* 생성물 갤러리 */
+.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.gal figure { margin: 0; }
+.gal img { width: 100%; display: block; border: 1px solid var(--line); }
+.gal figcaption { margin-top: 6px; }
+
+/* 리스트 */
+article ul { margin: 0 0 1.15em; padding-left: 1.15em; }
+article li { margin: 0 0 0.5em; }
+article li::marker { color: var(--accent); }
+
+/* ── 아카이브·출처 ── */
+.sources { margin: 64px 0 0; padding: 22px 0 0; border-top: 1px solid var(--line); }
+.sources h3 {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-dim); font-weight: 400; margin: 0 0 12px;
+}
+.sources ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.sources li {
+  font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.02em;
+  color: var(--text-dim); margin: 0 0 7px; line-height: 1.7;
+}
+.sources a { color: var(--text); border-bottom: 1px solid rgba(201, 146, 74, 0.45); }
+.sources a:hover { color: var(--accent-cool); border-color: var(--accent-cool); }
+
+footer {
+  margin: 70px 0 0; padding: 24px 0 46px; border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; gap: 12px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em; color: var(--text-dim);
+}
+footer a { border-bottom: 1px solid transparent; }
+footer a:hover { color: var(--accent-cool); border-color: var(--accent-cool); }
+
+@media (max-width: 560px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .ab { grid-template-columns: 1fr; }
+  .ab figcaption { justify-content: flex-start; }
+}

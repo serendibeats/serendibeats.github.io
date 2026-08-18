@@ -1,0 +1,108 @@
+/* 우상단 유틸리티 코너 — 메인·로그 페이지 공용 (style.css에서 추출).
+   필요 베이스: tokens.css (토큰 + .sr). 칩 마크업은 radio.js가 주입한다. */
+/* ── 우상단 유틸리티 코너: 크레이트 라디오 + 언어 스위치 ──
+   단일 베이스라인의 lowercase mono 한 줄. 구분은 간격, hairline은 하나만.
+   필름 위 가독성: 이중 text-shadow + 재생 중에만 나타나는 borderless 스크림. */
+.corner {
+  position: fixed; top: 22px; right: 26px; z-index: 40;
+  view-transition-name: corner; /* 페이지 전환 시 root와 분리 — 코너는 제자리에서 잇는다 */
+  display: flex; align-items: baseline; justify-content: flex-end;
+  gap: 20px; flex-wrap: wrap; max-width: calc(100vw - 52px);
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 14px rgba(0, 0, 0, 0.5);
+}
+.corner::before { /* 코너 스크림 — 평상시 은은하게(밝은 창 위 가독성), 재생 중 진해짐 */
+  content: ""; position: absolute; inset: -22px -26px -34px -80px; z-index: -1;
+  background: radial-gradient(ellipse at top right,
+    rgba(10, 8, 6, 0.55), rgba(10, 8, 6, 0.34) 45%, rgba(10, 8, 6, 0.12) 65%, transparent 80%);
+  opacity: 0.55; transition: opacity 0.3s ease-out; pointer-events: none;
+}
+.corner.live::before { opacity: 1; }
+.corner .div { align-self: center; width: 1px; height: 12px; background: rgba(231, 224, 212, 0.15); order: 2; }
+.langsw {
+  background: none; border: none; cursor: pointer; padding: 4px 0; order: 3;
+  font: inherit; letter-spacing: inherit; color: #cfc8ba; display: inline-flex; gap: 10px;
+}
+.langsw .cur { color: #f2ecdf; }
+.langsw .alt { opacity: 0.5; transition: opacity 0.2s ease-out; }
+.langsw:hover .alt { opacity: 1; transition-duration: 0.1s; }
+.langsw:active { opacity: 0.6; }
+
+/* 라디오 칩 */
+.chip { order: 1; min-width: 0; }
+.chip .core { display: flex; align-items: baseline; gap: 11px; padding: 4px 0; }
+.chip .tgl {
+  background: none; border: none; cursor: pointer; padding: 0;
+  display: inline-flex; align-items: baseline; gap: 8px;
+  font: inherit; letter-spacing: inherit; color: var(--text); white-space: nowrap; /* off 상태 가독 — 밝은 창 위에서도 */
+}
+.chip .tgl .lab { border-bottom: 1px solid rgba(231, 224, 212, 0.45); padding-bottom: 1px; transition: color 0.2s ease-out, border-color 0.2s ease-out; }
+.chip .tgl:hover { color: var(--accent-cool); }
+.chip .tgl:hover .lab { border-color: var(--accent-cool); transition-duration: 0.1s; }
+.chip .tgl:active { opacity: 0.6; }
+.chip.playing .tgl { color: var(--accent); }
+.chip.playing .tgl .lab { border-color: transparent; }
+.chip .glyph { /* 대기 ▶(컨트롤) / 재생 ●(breathe) — 상태등이 아니라 눌리는 것임을 글리프로 */
+  width: 8px; height: 10px; flex: none; align-self: center; transform: translateY(0.5px);
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.chip.playing .glyph {
+  width: 8px; height: 8px; clip-path: none; border-radius: 50%;
+  background: currentColor;
+  animation: radio-pop 0.2s ease-out, radio-breathe 1.8s ease-in-out 0.2s infinite;
+}
+@keyframes radio-pop { from { transform: translateY(0.5px) scale(0.8); } }
+@keyframes radio-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.chip .live-info { display: none; align-items: baseline; gap: 11px; min-width: 0; }
+.chip.playing .live-info { display: flex; animation: radio-fadeslide 0.2s ease-out; }
+@keyframes radio-fadeslide { from { opacity: 0; transform: translateX(4px); } }
+/* 음소거 방송 상태: 안내 문구, 글리프는 정지 */
+.chip .mu { display: none; color: var(--text-dim); flex: none; }
+.chip.muted .mu { display: inline; }
+.chip.muted .glyph { animation: none; opacity: 0.6; }
+/* tap/click — 입력 장치에 맞는 동사 (터치 기본, 정밀 포인터면 click) */
+.corner .clk { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .corner .tap { display: none; }
+  .corner .clk { display: inline; }
+}
+/* 1회성 사운드 힌트 — 칩 왼쪽, 타자기 리빌, 첫 터치에 소멸 (JS가 1.5초 뒤 공개) */
+.corner .hint {
+  order: 0; color: var(--text-dim); white-space: nowrap; overflow: hidden;
+  max-width: 0;
+  animation: radio-type 1.3s steps(26, end) 0.2s forwards;
+}
+@keyframes radio-type { to { max-width: 32ch; } }
+@media (prefers-reduced-motion: reduce) {
+  .corner .hint { animation: none; max-width: none; }
+}
+.chip .np {
+  min-width: 0; max-width: min(38vw, 300px);
+  color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chip .np b { color: var(--text); font-weight: 500; }
+.chip .np .in { display: inline-block; }
+/* 잘린 캡션은 자동으로 왼쪽으로 흘렀다 돌아온다 — 양끝에서 잠깐 정지, 속도는 JS가 길이 비례로 */
+.chip .np.trunc { text-overflow: clip; }
+.chip .np.trunc .in { animation: radio-slide var(--mdur, 9s) linear 1.2s infinite; }
+@keyframes radio-slide {
+  0%, 14% { transform: translateX(0); }
+  46%, 62% { transform: translateX(var(--shift, 0px)); }
+  94%, 100% { transform: translateX(0); }
+}
+.chip .ctl { display: flex; align-items: baseline; gap: 2px; opacity: 0; transition: opacity 0.2s ease-out; }
+.chip.playing:hover .ctl, .chip.playing:focus-within .ctl { opacity: 1; transition-duration: 0.1s; }
+@media (hover: none) { .chip.playing .ctl { opacity: 1; } }
+.chip .ctl button, .chip .ctl a {
+  background: none; border: none; cursor: pointer; color: var(--text-dim);
+  font: inherit; padding: 2px 6px;
+}
+.chip .ctl button:hover, .chip .ctl a:hover { color: var(--accent-cool); }
+.chip .ctl button:active { opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) {
+  .chip.playing .glyph { animation: none; }
+  .chip .np.trunc .in { animation: none; }
+  .chip .np.trunc { text-overflow: ellipsis; } /* 모션 없이 말줄임으로 복귀 */
+  .chip.playing .live-info { animation: none; }
+}
