@@ -71,6 +71,7 @@ function renderProjects() {
     .forEach(p => {
       const links = p.links || {};
       const href = links.site || links.github || links.youtube || links.telegram;
+      const external = href && /^https?:/.test(href);
 
       const card = document.createElement('article');
       card.className = 'proj';
@@ -96,12 +97,12 @@ function renderProjects() {
       if (href) {
         const a = document.createElement('a');
         a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener';
+        if (external) { a.target = '_blank'; a.rel = 'noopener'; } // 내부 글은 같은 탭
+
         a.textContent = t(p.title) + ' ';
         const ext = document.createElement('span');
         ext.className = 'ext';
-        ext.textContent = '↗';
+        ext.textContent = external ? '↗' : '→'; // 내부 글은 이동 화살표
         a.appendChild(ext);
         h3.appendChild(a);
       } else {

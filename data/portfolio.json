@@ -14,6 +14,19 @@
       "date": "2026-08"
     },
     {
+      "id": "mood-pipeline",
+      "category": "content",
+      "status": "EXPERIMENT · CLOSED",
+      "title": { "en": "The Vibe Pipeline", "ko": "느좋 파이프라인" },
+      "desc": {
+        "en": "Can an automated pipeline generate 'aesthetic' AI-influencer content — without me as the bottleneck? A one-week probe, written up.",
+        "ko": "'느좋' AI 인플루언서 콘텐츠를 내가 병목이 되지 않는 자동 파이프라인으로 뽑을 수 있을까? 일주일간의 검증 기록."
+      },
+      "tags": ["Pinterest", "Discord", "AI Video"],
+      "links": { "site": "log/vibe-pipeline/" },
+      "date": "2026-08"
+    },
+    {
       "id": "taste-archive",
       "category": "content",
       "status": "ONGOING",
