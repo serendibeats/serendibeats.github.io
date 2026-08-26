@@ -1,23 +1,6 @@
 {
   "projects": [
     {
-      "id": "sceneboard",
-      "category": "dev",
-      "status": "IN PROGRESS",
-      "title": "SceneBoard",
-      "desc": {
-        "en": "Structured AI video production for macOS — storyboard first, generate without the gacha.",
-        "ko": "구조화 AI 영상 제작 macOS 앱 — 스토리보드 우선, 갓챠 없는 생성 워크플로."
-      },
-      "tags": [
-        "macOS",
-        "Swift",
-        "AI"
-      ],
-      "links": {},
-      "date": "2026-08"
-    },
-    {
       "id": "mood-pipeline",
       "category": "content",
       "status": "EXPERIMENT · CLOSED",
