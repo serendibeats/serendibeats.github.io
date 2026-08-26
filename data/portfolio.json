@@ -29,8 +29,8 @@
       "status": "ONGOING",
       "title": "취향저장소",
       "desc": {
-        "en": "A Telegram channel of things I dug up by hand — music, AI, on-chain notes. No algorithm, just taste.",
-        "ko": "직접 디깅한 것들을 기록하는 텔레그램 채널 — 음악, AI, 온체인. 알고리즘 추천 말고, 손으로 판 것들만."
+        "en": "A Telegram channel of things I dug up by hand — music, AI, on-chain notes. No algorithm, just taste. Experiment retrospectives land here first.",
+        "ko": "직접 디깅한 것들을 기록하는 텔레그램 채널 — 음악, AI, 온체인. 알고리즘 추천 말고, 손으로 판 것들만. 실험 회고도 여기 먼저 올라갑니다."
       },
       "tags": [
         "Telegram",
@@ -40,7 +40,8 @@
       "links": {
         "telegram": "https://t.me/by_serendibeats"
       },
-      "date": "2026-07"
+      "date": "2026-07",
+      "image": "assets/img/taste-banner.jpg"
     },
     {
       "id": "arialook",
@@ -48,8 +49,8 @@
       "status": "EXPERIMENT · 2025",
       "title": "AriaLook",
       "desc": {
-        "en": "An AI fashion-look Shorts channel, run as a 4-week experiment — 43 shorts, 18k views. Retrospective in three parts on the Telegram channel.",
-        "ko": "4주간 실험한 AI 패션 룩 쇼츠 채널 — 쇼츠 43편, 총조회 1.8만 회. 회고는 텔레그램 채널에 3편 시리즈로."
+        "en": "An AI fashion-look Shorts channel, run as a 4-week experiment — 43 shorts, 18k views. AI made them, but every frame still needed my eyes, which is what killed it as a side project. Three-part retrospective on Telegram.",
+        "ko": "4주간 실험한 AI 패션 룩 쇼츠 채널 — 쇼츠 43편, 총조회 1.8만 회. 만드는 건 AI가 해도 확인은 사람 몫이라 투잡으로는 못 버틴다는 걸 배웠습니다. 회고 3편은 텔레그램에."
       },
       "tags": [
         "YouTube Shorts",
@@ -58,7 +59,8 @@
       "links": {
         "youtube": "https://www.youtube.com/@AriaLookAI"
       },
-      "date": "2025-07"
+      "date": "2025-07",
+      "image": "assets/img/aria-grid.jpg"
     }
   ]
 }
