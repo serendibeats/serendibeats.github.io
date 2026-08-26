@@ -3,14 +3,14 @@
     {
       "id": "mood-pipeline",
       "category": "content",
-      "status": "EXPERIMENT · CLOSED",
+      "status": "EXPERIMENT · PAUSED",
       "title": {
         "en": "The Vibe Pipeline",
         "ko": "느좋 파이프라인"
       },
       "desc": {
-        "en": "Can an automated pipeline generate 'aesthetic' AI-influencer content — without me as the bottleneck? A one-week probe, written up (in Korean).",
-        "ko": "'느좋' AI 인플루언서 콘텐츠를 내가 병목이 되지 않는 자동 파이프라인으로 뽑을 수 있을까? 일주일간의 검증 기록."
+        "en": "Can an automated pipeline generate 'aesthetic' AI-influencer content without me as the bottleneck? The pipeline ran; grinding out a rubric for taste is where I stopped. Written up in Korean.",
+        "ko": "'느좋' AI 인플루언서 콘텐츠를 내가 병목이 되지 않는 자동 파이프라인으로 뽑을 수 있을까? 파이프라인은 돌았지만 감성 판정을 기계에 넘길 채점표까지는 깎지 않기로 했다."
       },
       "tags": [
         "Pinterest",
