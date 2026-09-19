@@ -44,6 +44,29 @@
       "image": "assets/img/taste-banner.jpg"
     },
     {
+      "id": "neer",
+      "category": "dev",
+      "status": "APP · PAUSED",
+      "title": {
+        "en": "Neer",
+        "ko": "Neer"
+      },
+      "desc": {
+        "en": "An iPhone app for discovering people nearby on a map, exploring profiles, and starting a conversation. Built with SwiftUI and Supabase. Development log in Korean.",
+        "ko": "지도에서 가까운 사람을 발견하고, 프로필을 거쳐 대화로 이어지는 iPhone 앱. SwiftUI와 Supabase로 만들었던 화면과 기능을 기록했다."
+      },
+      "tags": [
+        "iOS",
+        "SwiftUI",
+        "Supabase"
+      ],
+      "links": {
+        "site": "log/neer/"
+      },
+      "date": "2026-06",
+      "image": "log/neer/img/cover.jpg"
+    },
+    {
       "id": "arialook",
       "category": "content",
       "status": "EXPERIMENT · 2025",
