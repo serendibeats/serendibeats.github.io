@@ -1,6 +1,30 @@
 {
   "projects": [
     {
+      "id": "hummingseed",
+      "category": "content",
+      "status": "ONGOING",
+      "title": {
+        "en": "Hummingseed",
+        "ko": "Hummingseed"
+      },
+      "desc": {
+        "en": "Short Bible story songs for kids, made by two friends with AI and posted to the YouTube channel Hummingseed. A first release on streaming so far. Mid-project log, written up in Korean.",
+        "ko": "친구와 둘이 AI로 영어권 아이들을 위한 성경 동요를 만들어 유튜브 채널 Hummingseed에 올리고 있다. 첫 음반과 유튜브 채널까지의 중간 기록."
+      },
+      "tags": [
+        "YouTube",
+        "AI Video",
+        "Music"
+      ],
+      "links": {
+        "site": "log/hummingseed/",
+        "youtube": "https://www.youtube.com/@hummingseed"
+      },
+      "date": "2026-10",
+      "image": "log/hummingseed/img/cover.jpg"
+    },
+    {
       "id": "mood-pipeline",
       "category": "content",
       "status": "EXPERIMENT · PAUSED",
